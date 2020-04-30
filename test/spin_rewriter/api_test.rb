@@ -46,39 +46,34 @@ module SpinRewriter
       end
     end
 
-    # # Test if Api.text_with_spintax() correctly parses the response it
-    # # gets from SpinRewriter API.
-    # @mock.patch('spinrewriter.urllib2')
-    # def test_text_with_spintax_call(self, urllib2):
-    #
-    #   # mock response from urllib2
-    #   mocked_response = {
-    #     "status":"OK",
-    #     "response":"This is my über cute {dog|pet|animal}.",
-    #     "api_requests_made":1,
-    #     "api_requests_available":99,
-    #     "protected_terms":"food, cat",
-    #     "nested_spintax":"false",
-    #     "confidence_level":"medium"
-    #   }
-    #   urllib2.urlopen.return_value.read.return_value = mocked_response
-    #
-    #   # call API
-    #   result = @api.text_with_spintax(
-    #     text='This is my über cute dog.',  # note the non-ascii character
-    #     protected_terms=['food', 'cat']
-    #   )
-    #
-    #   # test results
-    #   assert_equal(result['status'], 'OK')
-    #   assert_equal(result['api_requests_made'], 1)
-    #   assert_equal(result['api_requests_available'], 99)
-    #   assert_equal(result['protected_terms'], 'food, cat')
-    #   assert_equal(result['nested_spintax'], 'false')
-    #   assert_equal(result['confidence_level'], 'medium')
-    #   assert_equal(
-    #     result['response'], 'This is my über cute {dog|pet|animal}.')
-    # end
+    # Test if Api.text_with_spintax() correctly parses the response it
+    # gets from SpinRewriter API.
+    def test_text_with_spintax
+      text      = 'This is my über cute dog.'
+      spun_text = 'This is my über cute {dog|pet|animal}.'
+
+      mocked_response = {
+        "status"                 => "OK",
+        "response"               => spun_text,
+        "api_requests_made"      => 1,
+        "api_requests_available" => 99,
+        "protected_terms"        => "food, cat",
+        "nested_spintax"         => "false",
+        "confidence_level"       => "medium"
+      }
+
+      stub_response(mocked_response) do
+        result = @api.text_with_spintax(text, protected_terms: ['food', 'cat'])
+
+        assert_equal 'OK',        result['status']
+        assert_equal 1,           result['api_requests_made']
+        assert_equal 99,          result['api_requests_available']
+        assert_equal 'food, cat', result['protected_terms']
+        assert_equal 'false',     result['nested_spintax']
+        assert_equal 'medium',    result['confidence_level']
+        assert_equal spun_text,   result['response']
+      end
+    end
     #
     # @mock.patch('spinrewriter.urllib2')
     # def test_unique_variation_call(self, urllib2):
