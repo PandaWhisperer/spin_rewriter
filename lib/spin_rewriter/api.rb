@@ -17,6 +17,18 @@ module SpinRewriter
       @api_key       = api_key
     end
 
+    # Return the number of made and remaining API calls for the 24-hour period.
+    # @return: remaining API quota
+    # @rtype: dictionary
+    def api_quota
+      params = {
+        email_address: self.email_address,
+        api_key: self.api_key,
+        action: :api_quota,
+      }
+      send_request(params)
+    end
+
     private
 
     # Invoke Spin Rewriter API with given parameters and return its response.

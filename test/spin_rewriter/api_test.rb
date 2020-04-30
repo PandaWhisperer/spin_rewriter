@@ -18,41 +18,34 @@ module SpinRewriter
     # Test that _send_requests correctly parses JSON response into a dict
     # and that request parameters get encoded beforehand.
     def test_send_request
-      # mock response from connection
       stub_response({ foo: "bär" }) do
-        # call it
         result = @api.send(:send_request, { foo: 'bär' })
 
-        # test response
         assert_equal 'bär', result[:'foo']
       end
     end
 
-    # # Test if Api.api_quota() correctly parses the response it gets from SpinRewriter API.
-    # @mock.patch('spinrewriter.urllib2')
-    # def test_api_quota_call(self, urllib2):
-    #
-    #   # mock response from urllib2
-    #   mocked_response = {
-    #     "status":"OK",
-    #     "response":"You made 0 API requests in the last 24 hours. 100 still available.",
-    #     "api_requests_made":0,"api_requests_available":100
-    #   }
-    #   urllib2.urlopen.return_value.read.return_value = mocked_response
-    #
-    #   # call API
-    #   result = @api.api_quota()
-    #
-    #   # test responses
-    #   assert_equal(result['status'], u'OK')
-    #   assert_equal(result['api_requests_made'], 0)
-    #   assert_equal(result['api_requests_available'], 100)
-    #   assert_equal(
-    #       result['response'],
-    #       'You made 0 API requests in the last 24 hours. 100 still available.'
-    #   )
-    # end
-    #
+    # Test if Api.api_quota() correctly parses the response it gets from SpinRewriter API.
+    def test_api_quota
+      msg = 'You made 0 API requests in the last 24 hours. 100 still available.'
+
+      mocked_response = {
+        "status" => "OK",
+        "api_requests_made" => 0,
+        "api_requests_available" => 100,
+        "response" => msg
+      }
+
+      stub_response(mocked_response) do
+        result = @api.api_quota
+
+        assert_equal 'OK', result['status']
+        assert_equal 0,    result['api_requests_made']
+        assert_equal 100,  result['api_requests_available']
+        assert_equal msg,  result['response']
+      end
+    end
+
     # # Test if Api.text_with_spintax() correctly parses the response it
     # # gets from SpinRewriter API.
     # @mock.patch('spinrewriter.urllib2')
