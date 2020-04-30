@@ -7,7 +7,8 @@ module SpinRewriter
     class << self
       private
 
-      def tuple(name, keys, values = keys)
+      # Helper method to create named tuples
+      def named_tuple(name, keys, values = keys)
         Struct.new(name, *keys.map(&:to_sym)).new(*values.map(&:to_s))
       end
     end
@@ -16,30 +17,30 @@ module SpinRewriter
     URL = 'http://www.spinrewriter.com/action/api'
 
     # collection of possible values for the action parameter
-    ACTION = tuple('ACTION', ['api_quota', 'text_with_spintax', 'unique_variation',
-                 'unique_variation_from_spintax'])
+    ACTION = named_tuple('ACTION', ['api_quota', 'text_with_spintax',
+      'unique_variation', 'unique_variation_from_spintax'])
 
     # collection of possible values for the confidence_level parameter
-    CONFIDENCE_LVL = tuple('CONFIDENCE_LVL', ['low', 'medium', 'high'])
+    CONFIDENCE_LVL = named_tuple('CONFIDENCE_LVL', ['low', 'medium', 'high'])
 
     # collection of possible values for the spintax_format parameter
-    SPINTAX_FORMAT = tuple('SPINTAX_FORMAT',
+    SPINTAX_FORMAT = named_tuple('SPINTAX_FORMAT',
       ['pipe_curly', 'tilde_curly', 'pipe_square', 'spin_tag'],
       ['{|}', '{~}', '[|]', '[spin]']
     )
 
     # collection of all request parameters' names
-    REQ_P_NAMES = tuple('REQ_P_NAMES',
+    REQ_P_NAMES = named_tuple('REQ_P_NAMES',
       ['email_address', 'api_key', 'action', 'text', 'protected_terms',
        'confidence_level', 'nested_spintax', 'spintax_format'])
 
     # collection of all response fields' names
-    RESP_P_NAMES = tuple('RESP_P_NAMES',
+    RESP_P_NAMES = named_tuple('RESP_P_NAMES',
       ['status', 'response', 'api_requests_made', 'api_requests_available',
        'protected_terms', 'confidence_level'])
 
     # possible response status strings returned by API
-    STATUS = tuple('STATUS', ['ok', 'error'], ['OK', 'ERROR'])
+    STATUS = named_tuple('STATUS', ['ok', 'error'], ['OK', 'ERROR'])
 
     attr_reader :email_address, :api_key
 
