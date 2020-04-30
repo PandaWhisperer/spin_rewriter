@@ -152,7 +152,7 @@ module SpinRewriter
     # @return: processed text and some other meta info
     # @rtype: dictionary
     def unique_variation_from_spintax(text,
-      nested_spintax: False,
+      nested_spintax: false,
       spintax_format: SPINTAX_FORMAT.pipe_curly
     )
       params = {
@@ -190,7 +190,7 @@ module SpinRewriter
     # @param api_response: API's response fileds
     # :type api_response: dictionary
     def raise_error(api_response)
-      error_msg = api_response[:response]
+      error_msg = api_response[RESP_P_NAMES.response]
 
       case error_msg
       when %r{Authentication failed. No user with this email address found.}i,

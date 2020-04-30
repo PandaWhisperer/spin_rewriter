@@ -242,16 +242,19 @@ module SpinRewriter
     #   ))
     # end
     #
-    # @mock.patch('spinrewriter.urllib2')
-    # def test_unique_variation_from_spintax_error(self, urllib2):
-    #   # mock response from SpinRewriter
-    #   mocked_response = u"""{"status":"ERROR", "response":"Authentication failed. Unique API key is not valid for this user."}"""  # noqa
-    #   urllib2.urlopen.return_value.read.return_value = mocked_response
-    #
-    #   # test call
-    #   with self.assertRaises(ex.AuthenticationError):
-    #       @api.unique_variation_from_spintax('This is my dog.')
-    # end
+    def test_unique_variation_from_spintax_error
+      # mock response from SpinRewriter
+      mocked_response = {
+        "status"   => "ERROR",
+        "response" => "Authentication failed. Unique API key is not valid for this user."
+      }
+
+      stub_response(mocked_response) do
+        assert_raises(AuthenticationError) do
+          @api.unique_variation_from_spintax('This is my dog.')
+        end
+      end
+    end
 
     private
 
