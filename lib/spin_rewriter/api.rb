@@ -1,12 +1,33 @@
+require 'httparty'
+
 module SpinRewriter
   class Api
+    include HTTParty
+
+    # URL for invoking the API
+    URL = 'http://www.spinrewriter.com/action/api'
+
     # RESP_P_NAMES = %i[status response api_requests_made api_requests_available
     #                   protected_terms confidence_level]
 
-    def initialize(username, api_key)
+    attr_reader :email_address, :api_key
+
+    def initialize(email_address, api_key)
+      @email_address = email_address
+      @api_key       = api_key
     end
 
     private
+
+    # Invoke Spin Rewriter API with given parameters and return its response.
+    # @param params: parameters to pass along with the request
+    # @type params: tuple of 2-tuples
+    # @return: API's response (already JSON-decoded)
+    # @rtype: dictionary
+    def send_request(params)
+      response = self.class.post(URL, body: params)
+      response.parsed_response
+    end
 
     # Examine the API response and raise exception of the appropriate type.
     # NOTE: usage of this method only makes sense when API response's status
