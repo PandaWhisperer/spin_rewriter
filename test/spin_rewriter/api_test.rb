@@ -21,7 +21,7 @@ module SpinRewriter
       stub_response({ foo: "bär" }) do
         result = @api.send(:send_request, { foo: 'bär' })
 
-        assert_equal 'bär', result[:'foo']
+        assert_equal 'bär', result['foo']
       end
     end
 
@@ -260,7 +260,7 @@ module SpinRewriter
 
     def stub_response(body, &block)
       response = Minitest::Mock.new
-      response.expect :parsed_response, body
+      response.expect :body, JSON.dump(body)
 
       @api.class.stub :post, response, &block
 

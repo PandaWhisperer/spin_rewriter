@@ -1,4 +1,5 @@
 require 'httparty'
+require 'json'
 
 module SpinRewriter
   class Api
@@ -181,7 +182,7 @@ module SpinRewriter
     # @rtype: dictionary
     def send_request(params)
       response = self.class.post(URL, body: params)
-      response.parsed_response
+      JSON.parse response.body
     end
 
     # Examine the API response and raise exception of the appropriate type.
