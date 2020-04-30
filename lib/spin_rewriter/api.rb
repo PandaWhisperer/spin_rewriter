@@ -78,14 +78,54 @@ module SpinRewriter
     # @type spintax_format: string
     # @return: processed text and some other meta info
     # @rtype: dictionary
-    def text_with_spintax(text, protected_terms: nil,
-                                confidence_level: CONFIDENCE_LVL.medium,
-                                nested_spintax: false,
-                                spintax_format: SPINTAX_FORMAT.pipe_curly)
+    def text_with_spintax(text,
+      protected_terms:  nil,
+      confidence_level: CONFIDENCE_LVL.medium,
+      nested_spintax:   false,
+      spintax_format:   SPINTAX_FORMAT.pipe_curly
+    )
 
       response = transform_plain_text(
-        ACTION.text_with_spintax,
-        text,
+        ACTION.text_with_spintax, text,
+        protected_terms:  protected_terms,
+        confidence_level: confidence_level,
+        nested_spintax:   nested_spintax,
+        spintax_format:   spintax_format
+      )
+
+      if response[RESP_P_NAMES.status] == STATUS.error
+        raise_error(response)
+      else
+        response
+      end
+    end
+
+    # Return a unique variation of the given text.
+    #
+    # @param text: original text that needs to be changed
+    # @type text: string
+    # @param protected_terms: (optional) keywords and key phrases that
+    #    should be left intact
+    # @type protected_terms: list of strings
+    # @param confidence_level: (optional) the confidence level of
+    #    the One-Click Rewrite process
+    # @type confidence_level: string
+    # @param nested_spintax: (optional) whether or not to also spin
+    #    single words inside already spun phrases
+    # @type nested_spintax: boolean
+    # @param spintax_format: (optional) (probably not relevant here?
+    #    But API documentation not clear here ...)
+    # @type spintax_format: string
+    # @return: processed text and some other meta info
+    # @rtype: dictionary
+    def unique_variation(text,
+      protected_terms:  nil,
+      confidence_level: CONFIDENCE_LVL.medium,
+      nested_spintax:   false,
+      spintax_format:   SPINTAX_FORMAT.pipe_curly
+    )
+      response = transform_plain_text(
+        ACTION.unique_variation, text,
         protected_terms:  protected_terms,
         confidence_level: confidence_level,
         nested_spintax:   nested_spintax,
