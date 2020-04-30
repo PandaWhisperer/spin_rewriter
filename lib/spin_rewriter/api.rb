@@ -139,6 +139,39 @@ module SpinRewriter
       end
     end
 
+    # Return a unique variation of an already spun text.
+    #
+    # @param text: text to process
+    # @type text: string
+    # @param nested_spintax: whether or not to also spin single words
+    #    inside already spun phrases
+    # @type nested_spintax: boolean
+    # @param spintax_format: (probably not relevant here?
+    #    But API documentation not clear here ...)
+    # @type spintax_format: string
+    # @return: processed text and some other meta info
+    # @rtype: dictionary
+    def unique_variation_from_spintax(text,
+      nested_spintax: False,
+      spintax_format: SPINTAX_FORMAT.pipe_curly
+    )
+      params = {
+        REQ_P_NAMES.email_address  => self.email_address,
+        REQ_P_NAMES.api_key        => self.api_key,
+        REQ_P_NAMES.action         => ACTION.unique_variation_from_spintax,
+        REQ_P_NAMES.text           => text.encode('utf-8'),
+        REQ_P_NAMES.nested_spintax => nested_spintax,
+        REQ_P_NAMES.spintax_format => spintax_format,
+      }
+      response = send_request(params)
+
+      if response[RESP_P_NAMES.status] == STATUS.error
+        raise_error(response)
+      else
+        response
+      end
+    end
+
     private
 
     # Invoke Spin Rewriter API with given parameters and return its response.
