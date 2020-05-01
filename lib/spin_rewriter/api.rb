@@ -31,12 +31,12 @@ module SpinRewriter
     )
 
     # collection of all request parameters' names
-    REQ_P_NAMES = named_tuple('REQ_P_NAMES',
+    REQUEST_PARAMS = named_tuple('REQUEST_PARAMS',
       ['email_address', 'api_key', 'action', 'text', 'protected_terms',
        'confidence_level', 'nested_spintax', 'spintax_format'])
 
     # collection of all response fields' names
-    RESP_P_NAMES = named_tuple('RESP_P_NAMES',
+    RESPONSE_PARAMS = named_tuple('RESP_P_NAMES',
       ['status', 'response', 'api_requests_made', 'api_requests_available',
        'protected_terms', 'confidence_level'])
 
@@ -55,9 +55,9 @@ module SpinRewriter
     # @rtype: dictionary
     def api_quota
       params = {
-        REQ_P_NAMES.email_address => self.email_address,
-        REQ_P_NAMES.api_key       => self.api_key,
-        REQ_P_NAMES.action        => ACTION.api_quota,
+        REQUEST_PARAMS.email_address => self.email_address,
+        REQUEST_PARAMS.api_key       => self.api_key,
+        REQUEST_PARAMS.action        => ACTION.api_quota,
       }
       send_request(params)
     end
@@ -94,7 +94,7 @@ module SpinRewriter
         spintax_format:   spintax_format
       )
 
-      if response[RESP_P_NAMES.status] == STATUS.error
+      if response[RESPONSE_PARAMS.status] == STATUS.error
         raise_error(response)
       else
         response
@@ -133,7 +133,7 @@ module SpinRewriter
         spintax_format:   spintax_format
       )
 
-      if response[RESP_P_NAMES.status] == STATUS.error
+      if response[RESPONSE_PARAMS.status] == STATUS.error
         raise_error(response)
       else
         response
@@ -157,16 +157,16 @@ module SpinRewriter
       spintax_format: SPINTAX_FORMAT.pipe_curly
     )
       params = {
-        REQ_P_NAMES.email_address  => self.email_address,
-        REQ_P_NAMES.api_key        => self.api_key,
-        REQ_P_NAMES.action         => ACTION.unique_variation_from_spintax,
-        REQ_P_NAMES.text           => text.encode('utf-8'),
-        REQ_P_NAMES.nested_spintax => nested_spintax,
-        REQ_P_NAMES.spintax_format => spintax_format,
+        REQUEST_PARAMS.email_address  => self.email_address,
+        REQUEST_PARAMS.api_key        => self.api_key,
+        REQUEST_PARAMS.action         => ACTION.unique_variation_from_spintax,
+        REQUEST_PARAMS.text           => text.encode('utf-8'),
+        REQUEST_PARAMS.nested_spintax => nested_spintax,
+        REQUEST_PARAMS.spintax_format => spintax_format,
       }
       response = send_request(params)
 
-      if response[RESP_P_NAMES.status] == STATUS.error
+      if response[RESPONSE_PARAMS.status] == STATUS.error
         raise_error(response)
       else
         response
@@ -191,7 +191,7 @@ module SpinRewriter
     # @param api_response: API's response fileds
     # :type api_response: dictionary
     def raise_error(api_response)
-      error_msg = api_response[RESP_P_NAMES.response]
+      error_msg = api_response[RESPONSE_PARAMS.response]
 
       case error_msg
       when %r{Authentication failed. No user with this email address found.}i,
@@ -282,14 +282,14 @@ module SpinRewriter
       end
 
       params = {
-        REQ_P_NAMES.email_address    => self.email_address,
-        REQ_P_NAMES.api_key          => self.api_key,
-        REQ_P_NAMES.action           => action,
-        REQ_P_NAMES.text             => text.encode('utf-8'),
-        REQ_P_NAMES.protected_terms  => protected_terms,
-        REQ_P_NAMES.confidence_level => confidence_level,
-        REQ_P_NAMES.nested_spintax   => nested_spintax,
-        REQ_P_NAMES.spintax_format   => spintax_format,
+        REQUEST_PARAMS.email_address    => self.email_address,
+        REQUEST_PARAMS.api_key          => self.api_key,
+        REQUEST_PARAMS.action           => action,
+        REQUEST_PARAMS.text             => text.encode('utf-8'),
+        REQUEST_PARAMS.protected_terms  => protected_terms,
+        REQUEST_PARAMS.confidence_level => confidence_level,
+        REQUEST_PARAMS.nested_spintax   => nested_spintax,
+        REQUEST_PARAMS.spintax_format   => spintax_format,
       }
 
       send_request(params)
