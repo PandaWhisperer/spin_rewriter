@@ -18,7 +18,7 @@ module SpinRewriter
     # Test that _send_requests correctly parses JSON response into a dict
     # and that request parameters get encoded beforehand.
     def test_send_request
-      stub_response({ foo: "bär" }) do
+      stub_request({ foo: "bär" }) do
         result = @api.send(:send_request, { foo: 'bär' })
 
         assert_equal 'bär', result['foo']
@@ -36,7 +36,7 @@ module SpinRewriter
         "response" => msg
       }
 
-      stub_response(mocked_response) do
+      stub_request(mocked_response) do
         result = @api.api_quota
 
         assert_equal 'OK', result['status']
@@ -62,7 +62,7 @@ module SpinRewriter
         "confidence_level"       => "medium"
       }
 
-      stub_response(mocked_response) do
+      stub_request(mocked_response) do
         result = @api.text_with_spintax(text, protected_terms: ['food', 'cat'])
 
         assert_equal 'OK',        result['status']
@@ -91,7 +91,7 @@ module SpinRewriter
         "confidence_level"       => "medium"
       }
 
-      stub_response(mocked_response) do
+      stub_request(mocked_response) do
         result = @api.unique_variation(text, protected_terms: ['food', 'cat'])
 
         assert_equal 'OK',        result['status']
@@ -117,7 +117,7 @@ module SpinRewriter
         "api_requests_available" => 98,
         "confidence_level"       => "medium"
       }
-      stub_response(mocked_response) do
+      stub_request(mocked_response) do
         result = @api.unique_variation_from_spintax(text,
           nested_spintax: false,
           spintax_format: Api::SPINTAX_FORMAT.pipe_square
@@ -149,7 +149,7 @@ module SpinRewriter
         "confidence_level"       => "medium"
       }
 
-      stub_response mocked_response do
+      stub_request mocked_response do
         result = @api.send(:transform_plain_text,
           Api::ACTION.unique_variation, text,
           protected_terms:  [],
@@ -167,78 +167,44 @@ module SpinRewriter
         assert_equal spun_text,   result['response']
       end
     end
-    #
-    # @mock.patch('spinrewriter.Api._send_request')
-    # def test_protected_terms_transformation(self, _send_request):
-    #   """Test that protected_terms are correctly transformed into
-    #   a string."""
-    #   # prepare arguments for calling _transform_plain_text
-    #   args = dict(
-    #       action=Api.ACTION.unique_variation,
-    #       text=u'This is my über tasty pet food.',
-    #       protected_terms=['food', 'cat'],
-    #       confidence_level=Api.CONFIDENCE_LVL.medium,
-    #       nested_spintax=False,
-    #       spintax_format=Api.SPINTAX_FORMAT.pipe_curly,
-    #   )
-    #
-    #   # we don't care what the response is
-    #   _send_request.return_value = None
-    #
-    #   # call it
-    #   @api._transform_plain_text(**args)
-    #
-    #   # now test that protected_terms are in correct format
-    #   _send_request.assert_called_with((
-    #       ('email_address', 'foo@bar.com'),
-    #       ('api_key', 'test_api_key'),
-    #       ('action', 'unique_variation'),
-    #       ('text', u'This is my über tasty pet food.'.encode('utf-8')),
-    #       # This is the only line we are interested in here,
-    #       # it needs to be newline-separated
-    #       ('protected_terms', 'food\ncat'),
-    #       ('confidence_level', 'medium'),
-    #       ('nested_spintax', False),
-    #       ('spintax_format', '{|}'),
-    #   ))
-    # end
-    #
-    # @mock.patch('spinrewriter.Api._send_request')
-    # def test_protected_terms_empty(self, _send_request):
-    #   """Test that correct default value is set for protected_terms if the
-    #   list is empty.
-    #   """
-    #   # prepare arguments for calling _transform_plain_text
-    #   args = dict(
-    #       action=Api.ACTION.unique_variation,
-    #       text=u'This is my über cute dog.',
-    #       protected_terms=[],
-    #       confidence_level=Api.CONFIDENCE_LVL.medium,
-    #       nested_spintax=False,
-    #       spintax_format=Api.SPINTAX_FORMAT.pipe_curly,
-    #   )
-    #
-    #   # we don't care what the response is
-    #   _send_request.return_value = None
-    #
-    #   # call it
-    #   @api._transform_plain_text(**args)
-    #
-    #   # now test that protected_terms are in correct format
-    #   _send_request.assert_called_with((
-    #       ('email_address', 'foo@bar.com'),
-    #       ('api_key', 'test_api_key'),
-    #       ('action', 'unique_variation'),
-    #       ('text', u'This is my über cute dog.'.encode('utf-8')),
-    #       # This is the only line we are interested in here,
-    #       # it needs to be an empty string, not an empty list
-    #       ('protected_terms', ''),
-    #       ('confidence_level', 'medium'),
-    #       ('nested_spintax', False),
-    #       ('spintax_format', '{|}'),
-    #   ))
-    # end
-    #
+
+    # Test that protected_terms are correctly transformed into a string.
+    def test_protected_terms_transformation
+      # prepare arguments for calling _transform_plain_text
+      stubbed_method = lambda do |params|
+        assert_equal 'food\ncat', params['protected_terms']
+      end
+
+      @api.stub(:send_request, stubbed_method) do
+        @api.send(:transform_plain_text,
+          Api::ACTION.unique_variation,
+          'This is my über tasty pet food.',
+          protected_terms:  ['food', 'cat'],
+          confidence_level: Api::CONFIDENCE_LVL.medium,
+          nested_spintax:   false,
+          spintax_format:   Api::SPINTAX_FORMAT.pipe_curly,
+        )
+      end
+    end
+
+    # Test that correct default value is set for protected_terms if the list is empty.
+    def test_protected_terms_empty
+      stubbed_method = lambda do |params|
+        assert_equal '', params['protected_terms']
+      end
+
+      @api.stub(:send_request, stubbed_method) do
+        @api.send(:transform_plain_text,
+          Api::ACTION.unique_variation,
+          'This is my über cute dog.',
+          protected_terms:  [],
+          confidence_level: Api::CONFIDENCE_LVL.medium,
+          nested_spintax:   false,
+          spintax_format:   Api::SPINTAX_FORMAT.pipe_curly,
+        )
+      end
+    end
+
     def test_unique_variation_from_spintax_error
       # mock response from SpinRewriter
       mocked_response = {
@@ -246,7 +212,7 @@ module SpinRewriter
         "response" => "Authentication failed. Unique API key is not valid for this user."
       }
 
-      stub_response(mocked_response) do
+      stub_request(mocked_response) do
         assert_raises(AuthenticationError) do
           @api.unique_variation_from_spintax('This is my dog.')
         end
@@ -255,7 +221,7 @@ module SpinRewriter
 
     private
 
-    def stub_response(body, &block)
+    def stub_request(body, &block)
       response = Minitest::Mock.new
       response.expect :body, JSON.dump(body)
 
