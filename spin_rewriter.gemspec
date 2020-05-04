@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["github@pandawhisperer.net"]
 
   spec.summary       = %q{A Ruby interface to SpinRewriter.com}
-  spec.description   = %q{Foo}
+  spec.description   = %q{SpinRewriter API client}
   spec.homepage      = "https://github.com/PandaWhisperer/spin_rewriter"
   spec.license       = "MIT"
 
