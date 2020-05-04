@@ -1,12 +1,22 @@
-# SpinRewriter
+# SpinRewriter Ruby Gem
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/spin_rewriter`. To experiment with that code, run `bin/console` for an interactive prompt.
+[Spin Rewriter](http://www.spinrewriter.com/) is an online
+service for spinning text (synonym substitution) that creates unique version(s)
+of existing text. This package provides a way to easily interact with
+[SpinRewriter API](http://www.spinrewriter.com/api). Usage requires an
+account, [get one here](http://www.spinrewriter.com/registration).
 
-TODO: Delete this and the text above, and describe your gem
+This gem is basically a direct port of the official [Python client](https://github.com/niteoweb/spinrewriter), including a few idiosyncracies found in the original.
+It's not exactly the greatest Ruby code, but it works.
+
+## Features
+
+- Supports all available API calls (`api_quota`, `text_with_spintax`, `unique_variation`, `unique_variation_from_spintax`)
+- Supports the same options as the Python module
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's `Gemfile`:
 
 ```ruby
 gem 'spin_rewriter'
@@ -22,7 +32,25 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+After installing it, this is how you use it::
+
+Initialize SpinRewriter.
+
+    > require 'spin_rewriter'
+    > rewriter = SpinRewriter::Api.new('username', 'api_key')
+
+Request processed spun text with spintax.
+
+    > text = "This is the text we want to spin."
+    > rewriter.text_with_spintax(text)
+    "{This is|This really is|That is|This can be} some text that we'd {like to
+    |prefer to|want to|love to} spin."
+
+Request a unique variation of processed given text.
+
+    > rewriter.unique_variation(text)
+    "This really is some text that we'd love to spin."
+
 
 ## Development
 
@@ -32,7 +60,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/spin_rewriter.
+Bug reports and pull requests are welcome on GitHub at https://github.com/PandaWhisperer/spin_rewriter.
 
 ## License
 
